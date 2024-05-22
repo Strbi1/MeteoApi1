@@ -1,0 +1,1240 @@
+openapi: 3.0.0
+info:
+  title: MeteoAPI
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+paths:
+  /measurements:
+    get:
+      description: List svih merenja na datoj lokaciji
+      operationId: api.getMeasurements
+      parameters:
+        - in: query
+          name: location
+          description: Naziv mesta/grada za kojeg želimo preuzmemo merenja.
+          schema:
+            type: string
+            example: Kopaonik
+          required: true
+      responses:
+        '200':
+          description: Lista svih merenja na datoj lokaciji
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Measurement"
+    post:
+      operationId: api.createMeasurement
+      description: Kreiranje merenja u datom vremenu, na datoj lokaciji, na datoj meteorološkoj stanici, za datu meteorološku promenljivu
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  description: Geografska širina
+                  type: number
+                  example: 43.28504518887785
+                long:
+                  description: Geografska dužina
+                  type: number
+                  example: 20.801009607938425
+                time:
+                  description: Vreme merenja
+                  type: string
+                  format: date-time
+                  example: 2024-05-15T14:10:28Z
+                variable:
+                  description: Naziv meteorološke promenljive
+                  type: string
+                  example: vazdušni pritisak
+                value:
+                  description: Vrednost meteorološke promenljive
+                  type: number
+                  format: float
+                  example:  827.7
+                unit:
+                  description: Jedinica merene promenljive
+                  type: string
+                  example: hPa
+                source_id:
+                  description: ID izvora podataka
+                  type: integer
+                  example: 1
+                location_id:
+                  description: ID lokacije
+                  type: integer
+                  example: 1
+                measurement_sources_id:
+                  description: ID izvor merenja
+                  type: integer
+                  example: 1
+              required:
+                - lat
+                - long
+                - time
+                - variable
+                - value 
+                - unit
+                - source_id
+                - location_id
+                - measurement_sources_id
+              example:
+                    lat: 43.28504518887785
+                    long: 20.801009607938425
+                    time: 2024-05-15T14:10:28Z
+                    variable: vazdušni pritisak
+                    value: 827.7
+                    unit: hPa
+                    source_id: 1
+                    location_id: 1
+                    measurement_sources_id: 1
+      responses:
+        '201':
+          description: Uspešno je kreirano merenje
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Measurement"
+  /measurements/{id}:
+    get:
+      description: Vraća listu koja sadrži jedno merenje sa datim `id`-om
+      operationId: api.getMeasurementById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Uspešno vraćeno merenje
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Measurement"
+    patch:
+      description: Ažurira merenje sa datim `id`-om
+      operationId: api.updateMeasurementById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  description: Geografska širina
+                  type: number
+                  example: 43.28504518887785
+                long:
+                  description: Geografska dužina
+                  type: number
+                  example: 20.80100960793842
+                time:
+                  description: Vreme merenja
+                  type: string
+                  format: date-time
+                  example: 2024-05-15T15:02:10Z
+                variable:
+                  description: Naziv meteorološke promenljive
+                  type: string
+                  example: vazdušni pritisak
+                value:
+                  description: Vrednost meteorološke promenljive
+                  type: number
+                  format: float
+                  example: 825.7
+                unit:
+                  description: Jedinica merene promenljive
+                  type: string
+                  example: hPa
+                source_id:
+                  description: ID izvora podataka
+                  type: integer
+                  example: 2
+                location_id:
+                  description: ID lokacije
+                  type: integer
+                  example: 1
+                measurement_sources_id:
+                  description: ID izvora merenja
+                  type: integer
+                  example: 1                      
+      responses:
+        '200':
+          description: Merenje je uspešno ažurirano.
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Measurement"
+    delete:
+      description: Briše merenje čiji je identifikator `id`
+      operationId: api.removeMeasurementById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Nema sadržaja
+  /locations:
+    get:
+      description: Vraća listu lokacija
+      operationId: api.getLocations
+      parameters:
+        - in: query
+          name: location
+          description: Naziv lokacije na kojoj vrsimo merenja.
+          schema:
+            type: string
+            example: Kopaonik
+          required: true
+      responses:
+        "200":
+          description: Lista svih lokacija
+          content:
+            application/json:
+              schema:
+                schema:
+                type: object
+                $ref: "#/components/schemas/Location"
+    post:
+      operationId: api.createLocation
+      description: Kreiranje nove lokacije
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type:
+                object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 1
+                name:
+                   description: Naziv lokacije
+                   type: string
+                   example: Kopaonik
+                lat:
+                  description: Geografska širina
+                  type: number
+                  example: 43.28504518887785
+                long:
+                  description: Geografska dužina
+                  type: number
+                  example: 20.80100960793842
+                country:
+                  description: Država lokacije
+                  type: string
+                  example: Srbija
+                type:
+                  description: Vrsta lokacije
+                  type: string
+                  example: Planina
+                elevation:
+                  description: Nadmorska visina
+                  type: integer
+                  example: 1070
+              required:
+                - id
+                - name
+                - lat
+                - long
+                - country
+                - type
+                - elevation
+              example:
+                id: 1
+                name: Kopaonik
+                lat: 43.28504518887785
+                long: 20.80100960793842
+                country: Srbija
+                type: Planina
+                elevation: 1070
+
+      responses:
+        '201':
+          description: Lokacija uspešno kreirana
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Location"
+  /locations/{id}:
+    get:
+      description: Vraća lokaciju sa datim `id`-om
+      operationId: api.getLocationById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator lokacije (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Uspešno vraćena lokacija
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Location"
+    patch:
+      description: Ažurira lokaciju sa datim `id`-om
+      operationId: api.updateLocationById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator lokacije (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj 
+                  type: integer 
+                  example: 2
+                name:
+                   description: Naziv lokacije
+                   type: string
+                   example: Palić
+                lat:
+                  description: Geografska širina
+                  type: number
+                  example: 46.098042855368334
+                long:
+                  description: Geografska dužina
+                  type: number
+                  example: 19.7679819
+                country:
+                  description: Država lokacije
+                  type: string
+                  example: Srbija
+                type:
+                  description: Vrsta lokacije
+                  type: string
+                  example: Jezero
+                elevation:
+                  description: Nadmorska visina
+                  type: integer
+                  example: 100
+              required:
+                - id
+                - name
+                - lat
+                - long
+                - country
+                - type
+                - elevation
+              example:
+                id: 2
+                name: Palić
+                lat: 46.098042855368334
+                long: 19.7679819
+                country: Srbija
+                type: Jezero
+                elevation: 100
+
+      responses:
+        '200':
+          description: Lokacija uspešno ažurirana
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Location"  
+    delete:
+      description: Briše lokaciju čiji je identifikator `id`
+      operationId: api.removeLocationById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator lokacije (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Nema sadržaja
+  /variables:
+    get:
+      description: Vraća listu svih meteoroloških promenljivih
+      operationId: api.getVariables
+      parameters:
+        - in: query
+          name: variable
+          description: Naziv varijable koju zelimo da merimo
+          schema:
+            type: string
+            example: vazdušni pritisak
+          required: true
+      responses:
+        '200':
+          description: Lista svih promenljivih
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Variable"
+    post:
+      operationId: api.createVariable
+      description: Kreiranje nove meteorološke promenljive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 1
+                name:
+                  description: Naziv promenljive
+                  type: string
+                  example: vazdušni pritisak
+                unit:
+                  description: Jedinica promenljive
+                  type: string
+                  example: hPa
+              required:
+                - id
+                - name
+                - unit
+              example:
+                id: 1
+                name: vazdušni pritisak
+                unit: hPa
+      responses:
+        '201':
+          description: Promenljiva uspešno kreirana
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Variable"
+  /variables/{id}:
+    get:
+      description: Vraća promenljivu sa datim `id`-om
+      operationId: api.getVariableById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator promenljive (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Uspešno vraćena promenljiva
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Variable"
+    patch:
+      description: Ažurira promenljivu sa datim `id`-om
+      operationId: api.updateVariableById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator promenljive (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 2
+                name:
+                  description: Naziv promenljive
+                  type: string
+                  example: temperatura
+                unit:
+                  description: Jedinica promenljive
+                  type: string
+                  example: celzijus
+              required:
+                - id 
+                - name
+                - unit
+              example:
+                id: 2
+                name: temperatura
+                unit: celzijus
+      responses:
+        '200':
+          description: Promenljiva uspešno ažurirana
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Variable"
+    delete:
+      description: Briše promenljivu čiji je identifikator `id`
+      operationId: api.removeVariableById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator promenljive (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Nema sadržaja
+  /sources:
+    get:
+      description: Vraća listu svih izvora podataka 
+      operationId: api.getSources
+      parameters:
+        - in: query
+          name: source
+          description: Naziv izvora podataka sa kojih preuzmemo merenja.
+          schema:
+            type: string
+            example: Accuweather
+          required: true
+      responses:
+        '200':
+          description: Lista svih izvora merenja
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Source"
+    post:
+      operationId: api.createSource
+      description: Kreiranje novog izvora merenja
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj (kluč)
+                  type: integer
+                code:
+                  description: Kod (skraćeni naziv)
+                  type: string
+                name:
+                  description: Naziv izvora
+                  type: string 
+                  example: RHMZ Republički hidrometeorološki zavod 
+              required:
+                - id
+                - code
+                - name
+              example:
+                id: 1
+                code: RHMZ
+                name: RHMZ Republički hidrometeorološki zavod
+      responses:
+        '201':
+          description: Izvor merenja uspešno kreiran
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Source"
+  /sources/{id}:
+    get:
+      description: Vraća izvor merenja sa datim `id`-om
+      operationId: api.getSourceById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator izvora merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Uspešno vraćen izvor merenja
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Source"
+    patch:
+      description: Ažurira izvor merenja sa datim `id`-om
+      operationId: api.updateSourceById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator izvora merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 2
+                code:
+                  description: Kod (skraćeni naziv)
+                  type: string
+                name:
+                  description: Naziv izvora merenja
+                  type: string
+                  example: Hydrometeorological Institute
+              required:
+                - id
+                - code
+                - name
+              example:
+                id: 1
+                code: Accu
+                name: Hydrometeorological Institute
+      responses:
+        '200':
+          description: Izvor merenja uspešno ažuriran
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Source"
+    delete:
+      description: Briše izvor merenja čiji je identifikator `id`
+      operationId: api.removeSourceById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator izvora merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Nema sadržaja
+  /stations:
+    get:
+      description: Vraća listu svih stanica za merenje
+      operationId: api.getStations
+      parameters:
+        - in: query
+          name: Stanice
+          description: Naziv stanice koja nam daje vredonsti merenja.
+          schema:
+            type: string
+            example: Meteorološka stanica Kopaonik
+          required: true
+      responses:
+        '200':
+          description: Lista svih stanica merenja
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Station"
+    post:
+      operationId: api.createStation
+      description: Kreiranje nove stanice merenja
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 1
+                name:
+                  description: Naziv stanice merenja
+                  type: string
+                  example: Automatic Weather Station
+                location_id:
+                  description: ID lokacije stanice
+                  type: integer
+                  example: 1
+                source_id:
+                  description: ID izvora podataka
+                  type: integer
+                  example: 1
+                type:
+                  description: Tip stanice
+                  type: string
+                  example: automatska
+              required:
+                - id
+                - name
+                - location_id
+                - source_id
+                - type
+              example:
+                id: 1
+                name: Meteorološka stanica Kopaonik
+                location_id: 1
+                source_id: 1
+                type: automatska
+
+      responses:
+        '201':
+          description: Stanica merenja uspešno kreirana
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Station"
+  /stations/{id}:
+    get:
+      description: Vraća stanicu merenja sa datim `id`-om
+      operationId: api.getStationById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator stanice merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Uspešno vraćena stanica merenja
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Station"
+    patch:
+      description: Ažurira stanicu merenja sa datim `id`-om
+      operationId: api.updateStationById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator stanice merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 2
+                name:
+                  description: Naziv stanice merenja
+                  type: string
+                  example: Meteorološka stanica Palić
+                location_id:
+                  description: ID lokacije stanice
+                  type: integer
+                  example: 2
+                source_id:
+                  description: ID izvora merenja
+                  type: integer
+                  example: 2
+                type:
+                  description: Tip stanice
+                  type: string
+                  example: ručna
+              example:
+                id: 2
+                name: Meteorološka stanica Palić
+                location_id: 2
+                source_id: 2
+                type: ručna
+
+      responses:
+        '200':
+          description: Stanica merenja uspešno ažurirana
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Station"
+    delete:
+      description: Briše stanicu merenja čiji je identifikator `id`
+      operationId: api.removeStationById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator stanice merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Nema sadržaja
+
+  /measurement_sources:
+    get:
+      description: Vraća listu svih izvora merenja
+      operationId: api.getMeasurementSources
+      parameters:
+        - in: query
+          name: Izvor merenja 
+          description: Naziv izvora merenja (satelit, meterološka stanica) sa tipom merenja.
+          schema:
+            type: string
+            example: hidrometeorološka stanica
+          required: true
+      responses:
+        '200':
+          description: Lista svih izvora merenja
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/MeasurementSource"
+    post:
+      operationId: api.createMeasurementSources
+      description: Kreiranje nove stanice merenja
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 1
+                name:
+                  description: Naziv izvora merenja
+                  type: string
+                  example: automatska meteorološka stanica
+                location_id:
+                  description: ID lokacije stanice
+                  type: integer
+                  example: 1
+                source_id:
+                  description: ID izvora podataka
+                  type: integer
+                  example: 1
+                type:
+                  description: Tip merenja
+                  type: string
+                  example: barometrom
+              required:
+                - id
+                - name
+                - location_id
+                - source_id
+                - type
+              example:
+                id: 1
+                name: automatska meteorološka stanica
+                location_id: 1
+                source_id: 1
+                type: barometar
+              $ref: "#/components/schemas/MeasurementSource"
+      responses:
+        '201':
+          description: Uspešno kreiran novi izvor merenja
+          content:
+           application/json:
+             schema:
+               $ref: "#/components/schemas/MeasurementSource"
+
+  /measurement_sources/{id}:
+    get:
+     description: Dobijanje izvora merenja po ID-ju
+     operationId: api.getMeasurementSourceById
+     parameters:
+      - in: path
+        name: id
+        description: Identifikator izvora merenja (interni podatak)
+        schema:
+          type: integer
+        required: true
+     responses:
+      '200':
+        description: Uspešno dobijen izvor merenja
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MeasurementSource"
+    patch:
+      description: Ažuriranje izvora merenja po ID-ju
+      operationId: api.updateMeasurementSourceById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator izvora merenja (interni podatak)
+          schema:
+           type: integer
+           example: 1
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  description: Identifikacioni broj
+                  type: integer
+                  example: 2
+                name:
+                  description: Naziv izvora merenja
+                  type: string
+                  example: automatska meteorološka stanica
+                location_id:
+                  description: ID lokacije stanice
+                  type: integer
+                  example: 2
+                source_id:
+                  description: ID izvora podataka
+                  type: integer
+                  example: 2
+                type:
+                  description: Tip merenja
+                  type: string
+                  example: termometar
+              example:
+                  id: 2
+                  name: automatska meteorološka stanica
+                  location_id: 2
+                  source_id: 2
+                  type: termometar
+      responses:
+        '200':
+          description: Uspešno ažuriran izvor merenja
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeasurementSource"
+    delete:
+      description: Brisanje izvora merenja po ID-ju
+      operationId: api.removeMeasurementSourceById
+      parameters:
+        - in: path
+          name: id
+          description: Identifikator izvora merenja (interni podatak)
+          schema:
+            type: integer
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Nema sadržaja
+
+
+
+
+components:
+  schemas:
+    Measurement:
+      type: object
+      description: merenja
+      x-tablename: measurement
+      properties:
+        id: 
+          description: Identifikacioni broj
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+          example: 1
+        lat:
+          description: Geografska širina
+          type: number
+          example: 43.28504518887785
+        long:
+          description: Geografska dužina
+          type: number
+          example: 20.801009607938425
+        time:
+          description: Vreme merenja
+          type: string
+          format: date-time
+          example: 2024-05-15T14:10:28Z
+        variable:
+          description: Naziv meteorološke promenljive
+          type: string
+          example: vazdušni pritisak
+        value:
+          description: Vrednost meteorološke promenljive
+          type: number
+          format: float
+          example: 827.7
+        unit:
+          description: Jedinica merene promenljive
+          type: string
+          example: hPa
+        source_id:
+          description: ID izvora podataka
+          type: integer
+          example: 1
+        location_id:
+          description: ID lokacije
+          type: integer
+          example: 1
+        measurement_sources_id:
+          description: ID izvor merenja
+          type: integer
+          example: 1
+      required:
+          - lat
+          - long
+          - time
+          - variable
+          - value 
+          - unit
+          - source_id
+          - location_id
+          - measurement_sources_id
+      example:
+        id: 1
+        lat: 43.28504518887785
+        long: 20.801009607938425
+        time: 2024-05-15T14:10:28Z
+        variable: vazdušni pritisak
+        value: 827
+        unit: hPa
+        source_id: 1
+        location_id: 1
+        measurement_sources_id: 1
+    Location:
+      type: object
+      description: lokacije
+      x-tablename: location
+      properties:
+        id:
+          description: Identifikacioni broj (interni ključ)
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+          example: 1
+        name:
+          description: Naziv lokacije
+          type: string
+          example: Kopaonik
+        lat:
+          description: Geografska širina
+          type: number
+          example: 43.28504518887785
+        long:
+          description: Geografska dužina
+          type: number
+          example: 20.80100960793842
+        country:
+          description: Država lokacije
+          type: string
+          example: Serbia
+        type:
+         description: Vrsta lokacije
+         type: string
+         example: Planina
+        elevation:
+          description: Nadmorska visina
+          type: integer
+          example: 1070
+      required:
+         - id
+         - name
+         - lat
+         - long
+         - country
+         - type
+         - elevation
+      example:
+        id: 1
+        name: Kopaonik
+        lat: 43.28504518887785
+        long: 20.80100960793842
+        country: Srbija
+        type: Planina
+        elevation: 1070
+    Variable:
+      type: object
+      description: Meteorološka promenljiva
+      x-tablename: variable
+      properties:
+        id:
+          description: Identifikacioni broj (interni ključ)
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+        name:
+          description: Naziv meteorološke varijable
+          type: string
+          enum:
+          - Temperature
+          - Precipitation
+          - Humidity
+        unit:
+          description: Jedinica promenljive
+          type: string
+          example: hPa
+      required:
+        - id
+        - name
+        - unit
+      example:
+        id: 1
+        name: vazdušni pritisak
+        unit: hPa    
+
+    Source:
+      type: object
+      description: Naziv izvora podataka
+      x-tablename: source
+      properties:
+        id:
+          description: Identifikacioni broj (kluč)
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+        code:
+          description: Kod (skraćeni naziv)
+          type: string
+        name:
+          description: Naziv izvora podataka
+          type: string
+      required:
+        - id
+        - code
+        - name
+      example:
+          id: 1
+          code: Accu
+          name: Accuweather
+    Station:
+      type: object
+      description: Stanice za merenje
+      x-tablename: station
+      properties:
+        id:
+          description: Identifikacioni broj (interni ključ)
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+          example: 1
+        name:
+          description: Naziv meteoroloških stanica
+          type: string
+          example: Meteorološka stanica Kopaonik
+        type:
+          description: Tip stanice
+          type: string
+          example: automatska
+        source_id:
+          description: ID izvora podataka
+          type: integer
+          example: 1
+        location_id:
+          description: ID lokacije
+          type: integer
+          example: 1
+      required:
+        - id
+        - name
+        - type
+        - location_id
+        - source_id
+      example:
+          id: 1
+          name: Meteorološka stanica Kopaonik
+          type: automatska
+          location_id: 1
+          source_id: 1
+    MeasurementSource:
+      type: object
+      description: Naziv izvora merenja
+      x-tablename: measurementSource
+      properties:
+        id:
+          description: Identifikacioni broj (kluč)
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+        name:
+          description: Naziv izvora merenja
+          type: string
+          example: automatska meteorološka stanica
+        location_id:
+          description: ID lokacije stanice
+          type: integer
+          example: 1
+        source_id:
+          description: ID izvora podataka
+          type: integer
+          example: 1
+        type:
+          description: Tip merenja
+          type: string
+          example: barometrom
+      required:
+        - id 
+        - name
+        - location_id
+        - source_id
+        - type
+      example:
+        id: 1
+        name: automatska meteorološka stanica
+        location_id: 1
+        source_id: 1
+        type: barometar
+    
+  securitySchemes:
+    UserToken:
+      type: apiKey
+      in: header
+      name: Authorization
+
