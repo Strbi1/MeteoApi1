@@ -66,10 +66,10 @@ paths:
                   description: ID izvora podataka
                   type: integer
                   example: 1
-                location_id:
-                  description: ID lokacije
-                  type: integer
-                  example: 1
+                location:
+                  description: Naziv lokacije
+                  type: string
+                  example: Kopaonik
                 measurement_sources_id:
                   description: ID izvor merenja
                   type: integer
@@ -82,7 +82,7 @@ paths:
                 - value 
                 - unit
                 - source_id
-                - location_id
+                - location
                 - measurement_sources_id
               example:
                     lat: 43.28504518887785
@@ -92,7 +92,7 @@ paths:
                     value: 827.7
                     unit: hPa
                     source_id: 1
-                    location_id: 1
+                    location: Kopaonik
                     measurement_sources_id: 1
       responses:
         '201':
@@ -169,10 +169,10 @@ paths:
                   description: ID izvora podataka
                   type: integer
                   example: 2
-                location_id:
-                  description: ID lokacije
-                  type: integer
-                  example: 1
+                location:
+                  description: Naziv lokacije
+                  type: string
+                  example: Kopaonik
                 measurement_sources_id:
                   description: ID izvora merenja
                   type: integer
@@ -1020,10 +1020,10 @@ components:
           description: ID izvora podataka
           type: integer
           example: 1
-        location_id:
-          description: ID lokacije
-          type: integer
-          example: 1
+        location:
+          description: Naziv lokacije
+          type: string
+          example: Kopaonik
         measurement_sources_id:
           description: ID izvor merenja
           type: integer
@@ -1036,7 +1036,7 @@ components:
           - value 
           - unit
           - source_id
-          - location_id
+          - location
           - measurement_sources_id
       example:
         id: 1
@@ -1047,7 +1047,7 @@ components:
         value: 827
         unit: hPa
         source_id: 1
-        location_id: 1
+        location: Kopaonik
         measurement_sources_id: 1
     Location:
       type: object

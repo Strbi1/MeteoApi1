@@ -36,7 +36,7 @@ def updateMeasurementById(body, id):
     measurement.value = body["value"]
     measurement.unit = body["unit"]
     measurement.source_id = body["source_id"]
-    measurement.location_id = body["location_id"]   
+    measurement.location = body["location"]   
     measurement.measurement_sources_id = body["measurement_sources_id"]
     database.db.session.commit()
     return 200

@@ -22,7 +22,7 @@ class _MeasurementDictBase(typing.TypedDict, total=True):
     value: float
     unit: str
     source_id: int
-    location_id: int
+    location: str
     measurement_sources_id: int
 
 
@@ -47,7 +47,7 @@ class TMeasurement(typing.Protocol):
         value: Vrednost meteorološke promenljive
         unit: Jedinica merene promenljive
         source_id: ID izvora podataka
-        location_id: ID lokacije
+        location: Naziv lokacije
         measurement_sources_id: ID izvor merenja
 
     """
@@ -66,10 +66,10 @@ class TMeasurement(typing.Protocol):
     value: 'sqlalchemy.Column[float]'
     unit: 'sqlalchemy.Column[str]'
     source_id: 'sqlalchemy.Column[int]'
-    location_id: 'sqlalchemy.Column[int]'
+    location: 'sqlalchemy.Column[str]'
     measurement_sources_id: 'sqlalchemy.Column[int]'
 
-    def __init__(self, lat: float, long: float, time: datetime.datetime, variable: str, value: float, unit: str, source_id: int, location_id: int, measurement_sources_id: int, id: typing.Optional[int] = None) -> None:
+    def __init__(self, lat: float, long: float, time: datetime.datetime, variable: str, value: float, unit: str, source_id: int, location: str, measurement_sources_id: int, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -82,14 +82,14 @@ class TMeasurement(typing.Protocol):
             value: Vrednost meteorološke promenljive
             unit: Jedinica merene promenljive
             source_id: ID izvora podataka
-            location_id: ID lokacije
+            location: Naziv lokacije
             measurement_sources_id: ID izvor merenja
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, lat: float, long: float, time: datetime.datetime, variable: str, value: float, unit: str, source_id: int, location_id: int, measurement_sources_id: int, id: typing.Optional[int] = None) -> "TMeasurement":
+    def from_dict(cls, lat: float, long: float, time: datetime.datetime, variable: str, value: float, unit: str, source_id: int, location: str, measurement_sources_id: int, id: typing.Optional[int] = None) -> "TMeasurement":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -102,7 +102,7 @@ class TMeasurement(typing.Protocol):
             value: Vrednost meteorološke promenljive
             unit: Jedinica merene promenljive
             source_id: ID izvora podataka
-            location_id: ID lokacije
+            location: Naziv lokacije
             measurement_sources_id: ID izvor merenja
 
         Returns:
