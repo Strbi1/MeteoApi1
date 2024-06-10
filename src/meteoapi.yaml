@@ -205,7 +205,7 @@ paths:
       operationId: api.getLocations
       parameters:
         - in: query
-          name: location
+          name: name
           description: Naziv lokacije na kojoj vrsimo merenja.
           schema:
             type: string
@@ -230,10 +230,6 @@ paths:
               type:
                 object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 1
                 name:
                    description: Naziv lokacije
                    type: string
@@ -259,7 +255,6 @@ paths:
                   type: integer
                   example: 1070
               required:
-                - id
                 - name
                 - lat
                 - long
@@ -267,7 +262,6 @@ paths:
                 - type
                 - elevation
               example:
-                id: 1
                 name: Kopaonik
                 lat: 43.28504518887785
                 long: 20.80100960793842
@@ -320,10 +314,6 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj 
-                  type: integer 
-                  example: 2
                 name:
                    description: Naziv lokacije
                    type: string
@@ -349,7 +339,6 @@ paths:
                   type: integer
                   example: 100
               required:
-                - id
                 - name
                 - lat
                 - long
@@ -357,7 +346,6 @@ paths:
                 - type
                 - elevation
               example:
-                id: 2
                 name: Palić
                 lat: 46.098042855368334
                 long: 19.7679819
@@ -393,11 +381,17 @@ paths:
       operationId: api.getVariables
       parameters:
         - in: query
-          name: variable
+          name: name
           description: Naziv varijable koju zelimo da merimo
           schema:
             type: string
-            example: vazdušni pritisak
+            enum:
+             - Air Pressure
+             - Temperature
+             - Precipitation
+             - Humidity 
+             - UV index
+             - Wind speed
           required: true
       responses:
         '200':
@@ -418,25 +412,27 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 1
                 name:
                   description: Naziv promenljive
                   type: string
-                  example: vazdušni pritisak
+                  enum:
+                    - Air Pressure
+                    - Temperature
+                    - Precipitation
+                    - Humidity 
+                    - UV index
+                    - Wind speed
                 unit:
                   description: Jedinica promenljive
                   type: string
                   example: hPa
               required:
-                - id
+              
                 - name
                 - unit
               example:
-                id: 1
-                name: vazdušni pritisak
+                
+                name: Air Pressure
                 unit: hPa
       responses:
         '201':
@@ -483,24 +479,27 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 2
+                
                 name:
                   description: Naziv promenljive
                   type: string
-                  example: temperatura
+                  enum:
+                    - Air Pressure
+                    - Temperature
+                    - Precipitation
+                    - Humidity 
+                    - UV index
+                    - Wind speed
                 unit:
                   description: Jedinica promenljive
                   type: string
                   example: celzijus
               required:
-                - id 
+                
                 - name
                 - unit
               example:
-                id: 2
+                
                 name: temperatura
                 unit: celzijus
       responses:
@@ -528,14 +527,17 @@ paths:
   /sources:
     get:
       description: Vraća listu svih izvora podataka 
-      operationId: api.getSources
+      operationId: api.getSource
       parameters:
         - in: query
-          name: source
+          name: code
           description: Naziv izvora podataka sa kojih preuzmemo merenja.
           schema:
             type: string
-            example: Accuweather
+            enum:
+             - RHMZ
+             - Accu
+             - W2Umbrella
           required: true
       responses:
         '200':
@@ -556,22 +558,21 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj (kluč)
-                  type: integer
                 code:
                   description: Kod (skraćeni naziv)
                   type: string
+                  enum:
+                    - RHMZ
+                    - Accu
+                    - W2Umbrella
                 name:
                   description: Naziv izvora
                   type: string 
                   example: RHMZ Republički hidrometeorološki zavod 
               required:
-                - id
                 - code
                 - name
               example:
-                id: 1
                 code: RHMZ
                 name: RHMZ Republički hidrometeorološki zavod
       responses:
@@ -619,23 +620,21 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 2
                 code:
                   description: Kod (skraćeni naziv)
                   type: string
+                  enum:
+                    - RHMZ
+                    - Accu
+                    - W2Umbrella
                 name:
                   description: Naziv izvora merenja
                   type: string
                   example: Hydrometeorological Institute
               required:
-                - id
                 - code
                 - name
               example:
-                id: 1
                 code: Accu
                 name: Hydrometeorological Institute
       responses:
@@ -663,11 +662,11 @@ paths:
   /stations:
     get:
       description: Vraća listu svih stanica za merenje
-      operationId: api.getStations
+      operationId: api.getStation
       parameters:
         - in: query
-          name: Stanice
-          description: Naziv stanice koja nam daje vredonsti merenja.
+          name: name
+          description: Naziv stanice na kojoj su izvršena merenja
           schema:
             type: string
             example: Meteorološka stanica Kopaonik
@@ -691,38 +690,32 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 1
                 name:
                   description: Naziv stanice merenja
                   type: string
                   example: Automatic Weather Station
-                location_id:
-                  description: ID lokacije stanice
-                  type: integer
-                  example: 1
-                source_id:
-                  description: ID izvora podataka
-                  type: integer
-                  example: 1
                 type:
                   description: Tip stanice
                   type: string
                   example: automatska
+                capacity:
+                  description: Kapacitet stanice
+                  type: integer
+                  example: 100
+                location_id:
+                  description: ID lokacije stanice
+                  type: integer
+                  example: 1
               required:
-                - id
                 - name
-                - location_id
-                - source_id
                 - type
+                - capacity
+                - location_id
               example:
-                id: 1
-                name: Meteorološka stanica Kopaonik
-                location_id: 1
-                source_id: 1
-                type: automatska
+               name: Meteorološka stanica Kopaonik
+               type: automatska
+               capacity: 100
+               location_id: 1
 
       responses:
         '201':
@@ -769,32 +762,23 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 2
                 name:
                   description: Naziv stanice merenja
                   type: string
                   example: Meteorološka stanica Palić
-                location_id:
-                  description: ID lokacije stanice
-                  type: integer
-                  example: 2
-                source_id:
-                  description: ID izvora merenja
-                  type: integer
-                  example: 2
                 type:
                   description: Tip stanice
                   type: string
                   example: ručna
+                capacity:
+                  description: Kapacitet stanice
+                  type: integer
+                  example: 10
               example:
                 id: 2
                 name: Meteorološka stanica Palić
-                location_id: 2
-                source_id: 2
                 type: ručna
+                capacity: 10
 
       responses:
         '200':
@@ -1085,7 +1069,6 @@ components:
           type: integer
           example: 1070
       required:
-         - id
          - name
          - lat
          - long
@@ -1093,7 +1076,6 @@ components:
          - type
          - elevation
       example:
-        id: 1
         name: Kopaonik
         lat: 43.28504518887785
         long: 20.80100960793842
@@ -1114,20 +1096,21 @@ components:
           description: Naziv meteorološke varijable
           type: string
           enum:
+          - Air Pressure
           - Temperature
           - Precipitation
           - Humidity
+          - UV index
+          - Wind speed
         unit:
           description: Jedinica promenljive
           type: string
           example: hPa
       required:
-        - id
         - name
         - unit
       example:
-        id: 1
-        name: vazdušni pritisak
+        name: Air Pressure
         unit: hPa    
 
     Source:
@@ -1147,11 +1130,9 @@ components:
           description: Naziv izvora podataka
           type: string
       required:
-        - id
         - code
         - name
       example:
-          id: 1
           code: Accu
           name: Accuweather
     Station:
@@ -1173,26 +1154,24 @@ components:
           description: Tip stanice
           type: string
           example: automatska
-        source_id:
-          description: ID izvora podataka
+        capacity:
+          description: Kpacitet stanice
           type: integer
-          example: 1
+          example: 100
         location_id:
-          description: ID lokacije
+          description: id stanice
           type: integer
           example: 1
       required:
-        - id
         - name
         - type
+        - capacity
         - location_id
-        - source_id
       example:
-          id: 1
           name: Meteorološka stanica Kopaonik
           type: automatska
+          capacity: 100
           location_id: 1
-          source_id: 1
     MeasurementSource:
       type: object
       description: Naziv izvora merenja

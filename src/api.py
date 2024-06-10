@@ -4,10 +4,15 @@ import database
 import models
 
 
-def getMeasurements():
-    measurements = models.Measurement.query.all()
+def getMeasurements(location=None):
+    query = models.Measurement.query
+    if location:
+        query = query.filter(models.Location.name.ilike(f'%{location}%'))
+    measurements = query.all() 
     measurements = map(lambda m: m.to_dict(), measurements)
-    return list(measurements)
+    return measurements  
+
+
 
 
 def createMeasurement(body):
@@ -49,15 +54,20 @@ def removeMeasurementById(id):
     database.db.session.commit()
     return 200
 
-
-def getLocations():
-    locations = models.Location.query.all()
-    locations = map(lambda m: m.to_dict(), locations)
+def getLocations(name=None):
+    query = models.Location.query
+    if name:
+        print(f"Filtering locations by name: {name}")
+        query = query.filter(models.Location.name.ilike(f'%{name}%'))
+    else:
+        print("No name provided, returning all locations")
+    locations = query.all() 
+    locations = map(lambda l: l.to_dict(), locations)  
     return list(locations)
-
+  
 
 def createLocation(body):
-    locations = models.Location.from_dict(**body)
+    locations = models.Location.from_dict(name=body["name"], lat=body["lat"], long = body["long"], country = body["country"], type = body["type"], elevation = body["elevation"])
     database.db.session.add(locations)
     database.db.session.commit()
     return locations.to_dict()
@@ -73,8 +83,7 @@ def getLocationById(id):
 def updateLocationById(body, id):
     locations = models.Location.query.filter_by(id=id).first()
     if locations is None:
-        return ("Locations not found.", 404)
-    locations.id = body["id"]    
+        return ("Locations not found.", 404)  
     locations.name = body["name"]
     locations.lat = body["lat"]
     locations.long = body["long"]
@@ -92,15 +101,20 @@ def removeLocationById(id):
     database.db.session.commit()
     return 200
 
-
-def getVariables():
-    variables = models.Variable.query.all()
-    variables = map(lambda m: m.to_dict(), variables)
-    return list(variables)
+  
+def getVariables(name=None):
+    query = models.Variable.query
+    if name:
+        query = query.filter(models.Variable.name.ilike(f'%{name}%'))
+    else:
+        return []
+    variables = query.all()
+    variables = [v.to_dict() for v in variables]
+    return variables
 
 
 def createVariable(body):
-    variables = models.Variable.from_dict(**body)
+    variables = models.Variable(name=body["name"], unit=body["unit"])
     database.db.session.add(variables)
     database.db.session.commit()
     return variables.to_dict()
@@ -117,7 +131,7 @@ def updateVariableById(body, id):
     variables = models.Variable.query.filter_by(id=id).first()
     if variables is None:
         return ("Variables not found.", 404)
-    variables.id = body["id"]
+    
     variables.name = body["name"]
     variables.unit = body["unit"]
     database.db.session.commit()
@@ -131,15 +145,29 @@ def removeVariableById(id):
     database.db.session.commit()
     return 200
 
+def getVariables(name=None):
+    query = models.Variable.query
+    if name:
+        query = query.filter(models.Variable.name.ilike(f'%{name}%'))
+    else:
+        return []
+    variables = query.all()
+    variables = [v.to_dict() for v in variables]
+    return variables
 
-def getSources():
-    sources = models.Source.query.all()
-    sources = map(lambda m: m.to_dict(), sources)
-    return list(sources)
+def getSource(code=None):
+    query = models.Source.query
+    if code:
+        query = query.filter(models.Source.code.ilike(f'%{code}%'))
+    else:
+        return []
+    sources = query.all()
+    sources = [s.to_dict() for s in sources]
+    return sources
 
 
 def createSource(body):
-    sources = models.Source.from_dict(**body)
+    sources = models.Source.from_dict(code = body["code"], name = body["name"])
     database.db.session.add(sources)
     database.db.session.commit()
     return sources.to_dict()
@@ -156,7 +184,6 @@ def updateSourceById(body, id):
     sources = models.Source.query.filter_by(id=id).first()
     if sources is None:
         return ("Sources not found.", 404)
-    sources.id = body["id"]
     sources.code = body["code"]
     sources.name = body["name"]
     database.db.session.commit()
@@ -171,17 +198,35 @@ def removeSourceById(id):
     return 200
 
 
-def getStations():
+
+def getStation():
     stations = models.Station.query.all()
     stations = map(lambda m: m.to_dict(), stations)
     return list(stations)
 
 
+
 def createStation(body):
-    stations = models.Station.from_dict(**body)
-    database.db.session.add(stations)
+    # Pronađi ili kreiraj Location objekat
+    location = models.Location.query.filter_by(id=body['location_id']).first()
+    if not location:
+        return ("Location not found.", 404)
+
+    # Kreiraj Station sa location objektom
+    station_data = {
+        "name": body["name"],
+        "type": body["type"],
+        "capacity": body["capacity"],
+        "location_id": location.id
+    }
+
+    station = models.Station.from_dict(**station_data)
+    database.db.session.add(station)
     database.db.session.commit()
-    return stations.to_dict()
+    return station.to_dict()
+
+
+    
 
 
 def getStationById(id):
@@ -195,11 +240,10 @@ def updateStationById(body, id):
     stations = models.Station.query.filter_by(id=id).first()
     if stations is None:
         return ("Stations not found.", 404)
-    stations.id = body["id"]
     stations.name = body["name"]
     stations.type = body["type"]
-    stations.location_id = body["location_id"]
-    stations.source_id = body["source_id"]
+    stations.capacity = body["capacity"]
+    stations.location_id = body['location_id']
     database.db.session.commit()
     return 200
 

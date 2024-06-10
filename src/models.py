@@ -146,16 +146,21 @@ class TMeasurement(typing.Protocol):
 Measurement: typing.Type[TMeasurement] = models.Measurement  # type: ignore
 
 
-class LocationDict(typing.TypedDict, total=True):
+class _LocationDictBase(typing.TypedDict, total=True):
     """TypedDict for properties that are required."""
 
-    id: int
     name: str
     lat: float
     long: float
     country: str
     type: str
     elevation: int
+
+
+class LocationDict(_LocationDictBase, total=False):
+    """TypedDict for properties that are not required."""
+
+    id: int
 
 
 class TLocation(typing.Protocol):
@@ -189,7 +194,7 @@ class TLocation(typing.Protocol):
     type: 'sqlalchemy.Column[str]'
     elevation: 'sqlalchemy.Column[int]'
 
-    def __init__(self, id: int, name: str, lat: float, long: float, country: str, type: str, elevation: int) -> None:
+    def __init__(self, name: str, lat: float, long: float, country: str, type: str, elevation: int, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -206,7 +211,7 @@ class TLocation(typing.Protocol):
         ...
 
     @classmethod
-    def from_dict(cls, id: int, name: str, lat: float, long: float, country: str, type: str, elevation: int) -> "TLocation":
+    def from_dict(cls, name: str, lat: float, long: float, country: str, type: str, elevation: int, id: typing.Optional[int] = None) -> "TLocation":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -260,12 +265,17 @@ class TLocation(typing.Protocol):
 Location: typing.Type[TLocation] = models.Location  # type: ignore
 
 
-class VariableDict(typing.TypedDict, total=True):
+class _VariableDictBase(typing.TypedDict, total=True):
     """TypedDict for properties that are required."""
 
-    id: int
     name: str
     unit: str
+
+
+class VariableDict(_VariableDictBase, total=False):
+    """TypedDict for properties that are not required."""
+
+    id: int
 
 
 class TVariable(typing.Protocol):
@@ -291,7 +301,7 @@ class TVariable(typing.Protocol):
     name: 'sqlalchemy.Column[str]'
     unit: 'sqlalchemy.Column[str]'
 
-    def __init__(self, id: int, name: str, unit: str) -> None:
+    def __init__(self, name: str, unit: str, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -304,7 +314,7 @@ class TVariable(typing.Protocol):
         ...
 
     @classmethod
-    def from_dict(cls, id: int, name: str, unit: str) -> "TVariable":
+    def from_dict(cls, name: str, unit: str, id: typing.Optional[int] = None) -> "TVariable":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -354,12 +364,17 @@ class TVariable(typing.Protocol):
 Variable: typing.Type[TVariable] = models.Variable  # type: ignore
 
 
-class SourceDict(typing.TypedDict, total=True):
+class _SourceDictBase(typing.TypedDict, total=True):
     """TypedDict for properties that are required."""
 
-    id: int
     code: str
     name: str
+
+
+class SourceDict(_SourceDictBase, total=False):
+    """TypedDict for properties that are not required."""
+
+    id: int
 
 
 class TSource(typing.Protocol):
@@ -385,7 +400,7 @@ class TSource(typing.Protocol):
     code: 'sqlalchemy.Column[str]'
     name: 'sqlalchemy.Column[str]'
 
-    def __init__(self, id: int, code: str, name: str) -> None:
+    def __init__(self, code: str, name: str, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -398,7 +413,7 @@ class TSource(typing.Protocol):
         ...
 
     @classmethod
-    def from_dict(cls, id: int, code: str, name: str) -> "TSource":
+    def from_dict(cls, code: str, name: str, id: typing.Optional[int] = None) -> "TSource":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -448,14 +463,19 @@ class TSource(typing.Protocol):
 Source: typing.Type[TSource] = models.Source  # type: ignore
 
 
-class StationDict(typing.TypedDict, total=True):
+class _StationDictBase(typing.TypedDict, total=True):
     """TypedDict for properties that are required."""
 
-    id: int
     name: str
     type: str
-    source_id: int
+    capacity: int
     location_id: int
+
+
+class StationDict(_StationDictBase, total=False):
+    """TypedDict for properties that are not required."""
+
+    id: int
 
 
 class TStation(typing.Protocol):
@@ -468,8 +488,8 @@ class TStation(typing.Protocol):
         id: Identifikacioni broj (interni ključ)
         name: Naziv meteoroloških stanica
         type: Tip stanice
-        source_id: ID izvora podataka
-        location_id: ID lokacije
+        capacity: Kpacitet stanice
+        location_id: id stanice
 
     """
 
@@ -482,10 +502,10 @@ class TStation(typing.Protocol):
     id: 'sqlalchemy.Column[int]'
     name: 'sqlalchemy.Column[str]'
     type: 'sqlalchemy.Column[str]'
-    source_id: 'sqlalchemy.Column[int]'
+    capacity: 'sqlalchemy.Column[int]'
     location_id: 'sqlalchemy.Column[int]'
 
-    def __init__(self, id: int, name: str, type: str, source_id: int, location_id: int) -> None:
+    def __init__(self, name: str, type: str, capacity: int, location_id: int, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -493,14 +513,14 @@ class TStation(typing.Protocol):
             id: Identifikacioni broj (interni ključ)
             name: Naziv meteoroloških stanica
             type: Tip stanice
-            source_id: ID izvora podataka
-            location_id: ID lokacije
+            capacity: Kpacitet stanice
+            location_id: id stanice
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, id: int, name: str, type: str, source_id: int, location_id: int) -> "TStation":
+    def from_dict(cls, name: str, type: str, capacity: int, location_id: int, id: typing.Optional[int] = None) -> "TStation":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -508,8 +528,8 @@ class TStation(typing.Protocol):
             id: Identifikacioni broj (interni ključ)
             name: Naziv meteoroloških stanica
             type: Tip stanice
-            source_id: ID izvora podataka
-            location_id: ID lokacije
+            capacity: Kpacitet stanice
+            location_id: id stanice
 
         Returns:
             Model instance based on the dictionary.
