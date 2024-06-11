@@ -7,7 +7,7 @@ import models
 def getMeasurements(location=None):
     query = models.Measurement.query
     if location:
-        query = query.filter(models.Location.name.ilike(f'%{location}%'))
+        query = query.filter(models.Measurement.location.ilike(f'%{location}%'))
     else:
         print("No name provided, returning all measurements")
     measurements = query.all()
