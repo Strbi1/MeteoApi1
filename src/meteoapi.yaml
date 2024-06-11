@@ -209,7 +209,14 @@ paths:
           description: Naziv lokacije na kojoj vrsimo merenja.
           schema:
             type: string
-            example: Kopaonik
+            enum:
+             - Beograd
+             - Dunav
+             - Niš
+             - Ribari 
+             - Palić
+             - Kopaonik
+             - Zlatibor
           required: true
       responses:
         "200":
@@ -231,9 +238,14 @@ paths:
                 object
               properties:
                 name:
-                   description: Naziv lokacije
-                   type: string
-                   example: Kopaonik
+                    enum:
+                    - Beograd
+                    - Dunav
+                    - Niš
+                    - Ribari 
+                    - Palić
+                    - Kopaonik
+                    - Zlatibor
                 lat:
                   description: Geografska širina
                   type: number
@@ -315,9 +327,14 @@ paths:
               type: object
               properties:
                 name:
-                   description: Naziv lokacije
-                   type: string
-                   example: Palić
+                  enum:
+                    - Beograd
+                    - Dunav
+                    - Niš
+                    - Ribari 
+                    - Palić
+                    - Kopaonik
+                    - Zlatibor
                 lat:
                   description: Geografska širina
                   type: number
@@ -350,7 +367,7 @@ paths:
                 lat: 46.098042855368334
                 long: 19.7679819
                 country: Srbija
-                type: Jezero
+                type: jezero
                 elevation: 100
 
       responses:
@@ -386,12 +403,12 @@ paths:
           schema:
             type: string
             enum:
-             - Air Pressure
-             - Temperature
-             - Precipitation
-             - Humidity 
+             - Vazdušni pritisak
+             - Temperatura
+             - Padavine
+             - Padavine
              - UV index
-             - Wind speed
+             - Brzina vetra
           required: true
       responses:
         '200':
@@ -416,23 +433,21 @@ paths:
                   description: Naziv promenljive
                   type: string
                   enum:
-                    - Air Pressure
-                    - Temperature
-                    - Precipitation
-                    - Humidity 
+                    - Vazdušni pritisak
+                    - Temperatura
+                    - Padavine
+                    - Padavine
                     - UV index
-                    - Wind speed
+                    - Brzina vetra
                 unit:
                   description: Jedinica promenljive
                   type: string
                   example: hPa
               required:
-              
                 - name
                 - unit
               example:
-                
-                name: Air Pressure
+                name: Vazdušni pritisak
                 unit: hPa
       responses:
         '201':
@@ -484,23 +499,21 @@ paths:
                   description: Naziv promenljive
                   type: string
                   enum:
-                    - Air Pressure
-                    - Temperature
-                    - Precipitation
-                    - Humidity 
+                    - Vazdušni pritisak
+                    - Temperatura
+                    - Padavine
+                    - Padavine
                     - UV index
-                    - Wind speed
+                    - Brzina vetra
                 unit:
                   description: Jedinica promenljive
                   type: string
                   example: celzijus
               required:
-                
                 - name
                 - unit
               example:
-                
-                name: temperatura
+                name: Temperatura
                 unit: celzijus
       responses:
         '200':
@@ -531,13 +544,15 @@ paths:
       parameters:
         - in: query
           name: code
-          description: Naziv izvora podataka sa kojih preuzmemo merenja.
+          description: Kod izvora podataka sa kojih preuzmemo merenja.
           schema:
             type: string
             enum:
-             - RHMZ
-             - Accu
-             - W2Umbrella
+               - GS1
+               - RS1
+               - PS1
+               - JS1
+               - SS1
           required: true
       responses:
         '200':
@@ -562,19 +577,33 @@ paths:
                   description: Kod (skraćeni naziv)
                   type: string
                   enum:
-                    - RHMZ
-                    - Accu
-                    - W2Umbrella
+                    - GS1
+                    - RS1
+                    - PS1
+                    - JS1
+                    - SS1
                 name:
                   description: Naziv izvora
                   type: string 
-                  example: RHMZ Republički hidrometeorološki zavod 
+                  example: Planinska stanica 1
+                location_id:
+                  description: ID lokacije na kojoj se nalazi izvor podataka
+                  type: integer
+                  example: 1
+                description:
+                  description: Opis izvora
+                  type: string
+                  example: Glavna planinska stanica 
               required:
                 - code
                 - name
+                - location_id
+                - description
               example:
-                code: RHMZ
-                name: RHMZ Republički hidrometeorološki zavod
+                code: PS1
+                name: Planinska stanica 1
+                location_id: 1
+                description: Glavna meteorološka planinska stanica 
       responses:
         '201':
           description: Izvor merenja uspešno kreiran
@@ -624,19 +653,33 @@ paths:
                   description: Kod (skraćeni naziv)
                   type: string
                   enum:
-                    - RHMZ
-                    - Accu
-                    - W2Umbrella
+                    - GS1
+                    - RS1
+                    - PS1
+                    - JS1
+                    - SS1
                 name:
-                  description: Naziv izvora merenja
+                  description: Naziv izvora
+                  type: string 
+                  example: Vazdušna stanica 1
+                location_id:
+                  description: ID lokacije na kojoj se nalazi izvor podataka
+                  type: integer
+                  example: 3
+                description:
+                  description: Opis izvora
                   type: string
-                  example: Hydrometeorological Institute
+                  example: Vazdušna stanica Niša
               required:
                 - code
                 - name
+                - location_id
+                - description
               example:
-                code: Accu
-                name: Hydrometeorological Institute
+                code: PS1
+                name: Planinska stanica 1
+                location_id: 3
+                description: Vazdušna stancica Niša
       responses:
         '200':
           description: Izvor merenja uspešno ažuriran
@@ -665,11 +708,14 @@ paths:
       operationId: api.getStation
       parameters:
         - in: query
-          name: name
-          description: Naziv stanice na kojoj su izvršena merenja
+          name: type
+          description: Tip stanice na kojoj su izvršena merenja
           schema:
             type: string
-            example: Meteorološka stanica Kopaonik
+            enum:
+              - automatska
+              - ručna
+              - hibridna
           required: true
       responses:
         '200':
@@ -695,9 +741,10 @@ paths:
                   type: string
                   example: Automatic Weather Station
                 type:
-                  description: Tip stanice
-                  type: string
-                  example: automatska
+                  enum:
+                    - automatska
+                    - ručna
+                    - hibridna
                 capacity:
                   description: Kapacitet stanice
                   type: integer
@@ -767,9 +814,10 @@ paths:
                   type: string
                   example: Meteorološka stanica Palić
                 type:
-                  description: Tip stanice
-                  type: string
-                  example: ručna
+                  enum:
+                    - automatska
+                    - ručna
+                    - hibridna
                 capacity:
                   description: Kapacitet stanice
                   type: integer
@@ -809,11 +857,14 @@ paths:
       operationId: api.getMeasurementSources
       parameters:
         - in: query
-          name: Izvor merenja 
-          description: Naziv izvora merenja (satelit, meterološka stanica) sa tipom merenja.
+          name: type 
+          description: Tip izvora merenja (satelit, meteorološka stanica, senzor na terenu)
           schema:
             type: string
-            example: hidrometeorološka stanica
+            enum:
+              - satelit
+              - meteorološka stanica
+              - senzor na terenu
           required: true
       responses:
         '200':
@@ -834,38 +885,35 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 1
                 name:
                   description: Naziv izvora merenja
                   type: string
-                  example: automatska meteorološka stanica
-                location_id:
-                  description: ID lokacije stanice
-                  type: integer
-                  example: 1
-                source_id:
-                  description: ID izvora podataka
-                  type: integer
-                  example: 1
+                  example: Sentinel
+                lat:
+                  description: Geografska širina
+                  type: number
+                  example: 43.28504518887785
+                long:
+                  description: Geografska dužina
+                  type: number
+                  example: 20.80100960793842
                 type:
                   description: Tip merenja
                   type: string
-                  example: barometrom
+                  enum:
+                    - satelit
+                    - meteorološka stanica
+                    - senzor na terenu
               required:
-                - id
                 - name
-                - location_id
-                - source_id
+                - lat
+                - long
                 - type
               example:
-                id: 1
                 name: automatska meteorološka stanica
-                location_id: 1
-                source_id: 1
-                type: barometar
+                lat: 0.0
+                long: 0.0
+                type: satelit
               $ref: "#/components/schemas/MeasurementSource"
       responses:
         '201':
@@ -910,32 +958,28 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  description: Identifikacioni broj
-                  type: integer
-                  example: 2
                 name:
                   description: Naziv izvora merenja
                   type: string
                   example: automatska meteorološka stanica
-                location_id:
-                  description: ID lokacije stanice
-                  type: integer
-                  example: 2
-                source_id:
-                  description: ID izvora podataka
-                  type: integer
-                  example: 2
+                lat:
+                  description: Geografska širina
+                  type: number
+                  example: 43.28504518887785
+                long:
+                  description: Geografska dužina
+                  type: number
+                  example: 20.80100960793842
                 type:
-                  description: Tip merenja
-                  type: string
-                  example: termometar
+                  enum:
+                    - satelit
+                    - meteorološka stanica
+                    - senzor na terenu
               example:
-                  id: 2
                   name: automatska meteorološka stanica
-                  location_id: 2
-                  source_id: 2
-                  type: termometar
+                  lat: 43.28504518887785
+                  long: 20.8010096079384
+                  type: meteorološka stanica
       responses:
         '200':
           description: Uspešno ažuriran izvor merenja
@@ -957,7 +1001,6 @@ paths:
       responses:
         '200':
           description: Nema sadržaja
-
 
 
 
@@ -1047,7 +1090,14 @@ components:
         name:
           description: Naziv lokacije
           type: string
-          example: Kopaonik
+          enum:
+             - Beograd
+             - Dunav
+             - Niš
+             - Ribari 
+             - Palić
+             - Kopaonik
+             - Zlatibor
         lat:
           description: Geografska širina
           type: number
@@ -1059,7 +1109,14 @@ components:
         country:
           description: Država lokacije
           type: string
-          example: Serbia
+          enum:
+             - Beograd
+             - Dunav
+             - Niš
+             - Ribari 
+             - Palić
+             - Kopaonik
+             - Zlatibor
         type:
          description: Vrsta lokacije
          type: string
@@ -1096,12 +1153,12 @@ components:
           description: Naziv meteorološke varijable
           type: string
           enum:
-          - Air Pressure
-          - Temperature
-          - Precipitation
-          - Humidity
+          - Vazdušni pritisak
+          - Temperatura
+          - Padavine
+          - Padavine
           - UV index
-          - Wind speed
+          - Brzina vetra
         unit:
           description: Jedinica promenljive
           type: string
@@ -1110,9 +1167,8 @@ components:
         - name
         - unit
       example:
-        name: Air Pressure
+        name: Vazdušni pritisak
         unit: hPa    
-
     Source:
       type: object
       description: Naziv izvora podataka
@@ -1124,17 +1180,33 @@ components:
           x-primary-key: true
           x-autoincrement: true
         code:
-          description: Kod (skraćeni naziv)
-          type: string
+           description: Kod (skraćeni naziv)
+           type: string
+           enum:
+              - GS1
+              - RS1
+              - PS1
+              - JS1
+              - SS1
         name:
           description: Naziv izvora podataka
           type: string
+        location_id:
+            description: ID lokacije na kojoj se nalazi izvor podataka
+            type: integer
+        description:
+            description: Opis izvora
+            type: string
       required:
-        - code
-        - name
+          - code
+          - name
+          - location_id
+          - description
       example:
-          code: Accu
-          name: Accuweather
+        code: PS1
+        name: Planinska stanica 1
+        location_id: 1
+        description: Osnovni planinski meteorološki izvor
     Station:
       type: object
       description: Stanice za merenje
@@ -1153,7 +1225,10 @@ components:
         type:
           description: Tip stanice
           type: string
-          example: automatska
+          enum:
+            - automatska
+            - ručna
+            - hibridna
         capacity:
           description: Kpacitet stanice
           type: integer
@@ -1186,30 +1261,31 @@ components:
           description: Naziv izvora merenja
           type: string
           example: automatska meteorološka stanica
-        location_id:
-          description: ID lokacije stanice
-          type: integer
-          example: 1
-        source_id:
-          description: ID izvora podataka
-          type: integer
-          example: 1
+        lat:
+          description: Geografska širina
+          type: number
+          example: 43.28504518887785
+        long:
+          description: Geografska dužina
+          type: number
+          example: 20.80100960793842 
         type:
           description: Tip merenja
           type: string
-          example: barometrom
+          enum:
+            - satelit
+            - meteorološka stanica
+            - senzori na terenu
       required:
-        - id 
         - name
-        - location_id
-        - source_id
+        - lat
+        - long
         - type
       example:
-        id: 1
         name: automatska meteorološka stanica
-        location_id: 1
-        source_id: 1
-        type: barometar
+        lat: 0.0
+        long: 0.0
+        type: satelit
     
   securitySchemes:
     UserToken:

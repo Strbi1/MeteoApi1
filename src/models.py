@@ -369,6 +369,8 @@ class _SourceDictBase(typing.TypedDict, total=True):
 
     code: str
     name: str
+    location_id: int
+    description: str
 
 
 class SourceDict(_SourceDictBase, total=False):
@@ -387,6 +389,8 @@ class TSource(typing.Protocol):
         id: Identifikacioni broj (kluč)
         code: Kod (skraćeni naziv)
         name: Naziv izvora podataka
+        location_id: ID lokacije na kojoj se nalazi izvor podataka
+        description: Opis izvora
 
     """
 
@@ -399,8 +403,10 @@ class TSource(typing.Protocol):
     id: 'sqlalchemy.Column[int]'
     code: 'sqlalchemy.Column[str]'
     name: 'sqlalchemy.Column[str]'
+    location_id: 'sqlalchemy.Column[int]'
+    description: 'sqlalchemy.Column[str]'
 
-    def __init__(self, code: str, name: str, id: typing.Optional[int] = None) -> None:
+    def __init__(self, code: str, name: str, location_id: int, description: str, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -408,12 +414,14 @@ class TSource(typing.Protocol):
             id: Identifikacioni broj (kluč)
             code: Kod (skraćeni naziv)
             name: Naziv izvora podataka
+            location_id: ID lokacije na kojoj se nalazi izvor podataka
+            description: Opis izvora
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, code: str, name: str, id: typing.Optional[int] = None) -> "TSource":
+    def from_dict(cls, code: str, name: str, location_id: int, description: str, id: typing.Optional[int] = None) -> "TSource":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -421,6 +429,8 @@ class TSource(typing.Protocol):
             id: Identifikacioni broj (kluč)
             code: Kod (skraćeni naziv)
             name: Naziv izvora podataka
+            location_id: ID lokacije na kojoj se nalazi izvor podataka
+            description: Opis izvora
 
         Returns:
             Model instance based on the dictionary.
@@ -572,14 +582,19 @@ class TStation(typing.Protocol):
 Station: typing.Type[TStation] = models.Station  # type: ignore
 
 
-class MeasurementSourceDict(typing.TypedDict, total=True):
+class _MeasurementSourceDictBase(typing.TypedDict, total=True):
     """TypedDict for properties that are required."""
 
-    id: int
     name: str
-    location_id: int
-    source_id: int
+    lat: float
+    long: float
     type: str
+
+
+class MeasurementSourceDict(_MeasurementSourceDictBase, total=False):
+    """TypedDict for properties that are not required."""
+
+    id: int
 
 
 class TMeasurementSource(typing.Protocol):
@@ -591,8 +606,8 @@ class TMeasurementSource(typing.Protocol):
     Attrs:
         id: Identifikacioni broj (kluč)
         name: Naziv izvora merenja
-        location_id: ID lokacije stanice
-        source_id: ID izvora podataka
+        lat: Geografska širina
+        long: Geografska dužina
         type: Tip merenja
 
     """
@@ -605,34 +620,34 @@ class TMeasurementSource(typing.Protocol):
     # Model properties
     id: 'sqlalchemy.Column[int]'
     name: 'sqlalchemy.Column[str]'
-    location_id: 'sqlalchemy.Column[int]'
-    source_id: 'sqlalchemy.Column[int]'
+    lat: 'sqlalchemy.Column[float]'
+    long: 'sqlalchemy.Column[float]'
     type: 'sqlalchemy.Column[str]'
 
-    def __init__(self, id: int, name: str, location_id: int, source_id: int, type: str) -> None:
+    def __init__(self, name: str, lat: float, long: float, type: str, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
         Args:
             id: Identifikacioni broj (kluč)
             name: Naziv izvora merenja
-            location_id: ID lokacije stanice
-            source_id: ID izvora podataka
+            lat: Geografska širina
+            long: Geografska dužina
             type: Tip merenja
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, id: int, name: str, location_id: int, source_id: int, type: str) -> "TMeasurementSource":
+    def from_dict(cls, name: str, lat: float, long: float, type: str, id: typing.Optional[int] = None) -> "TMeasurementSource":
         """
         Construct from a dictionary (eg. a POST payload).
 
         Args:
             id: Identifikacioni broj (kluč)
             name: Naziv izvora merenja
-            location_id: ID lokacije stanice
-            source_id: ID izvora podataka
+            lat: Geografska širina
+            long: Geografska dužina
             type: Tip merenja
 
         Returns:
