@@ -75,7 +75,7 @@ paths:
                 measurement_sources:
                   description:  izvor merenja
                   type: object
-                  example: {name: automatska meteorološka stanica,
+                  example: {name: satelit,
                             lat: 0.0,
                             long: 0.0,
                             type: satelit}
@@ -106,7 +106,7 @@ paths:
                                 country: Srbija,
                                 type: Planina,
                                 elevation: 1070}
-                    measurement_sources: {name: automatska meteorološka stanica,
+                    measurement_sources: {name: satelit,
                                           lat: 0.0,
                                           long: 0.0,
                                           type: satelit}
@@ -195,9 +195,9 @@ paths:
                   description:  izvora merenja
                   type: object
                   example: {name: automatska meteorološka stanica,
-                                          lat: 0.0,
-                                          long: 0.0,
-                                          type: satelit}                      
+                                          lat: 43.4522346543,
+                                          long: 21.23143654,
+                                          type: meteorološka stancica}                      
       responses:
         '200':
           description: Merenje je uspešno ažurirano.
@@ -1133,7 +1133,7 @@ components:
                     country: Srbija,
                     type: Planina,
                     elevation: 1070}
-        measurement_sources: {name: automatska meteorološka stanica,
+        measurement_sources: {name: satelit,
                               lat: 0.0,
                               long: 0.0,
                               type: satelit}
