@@ -36,14 +36,6 @@ paths:
             schema:
               type: object
               properties:
-                lat:
-                  description: Geografska širina
-                  type: number
-                  example: 43.28504518887785
-                long:
-                  description: Geografska dužina
-                  type: number
-                  example: 20.801009607938425
                 time:
                   description: Vreme merenja
                   type: string
@@ -51,49 +43,73 @@ paths:
                   example: 2024-05-15T14:10:28Z
                 variable:
                   description: Naziv meteorološke promenljive
-                  type: string
-                  example: vazdušni pritisak
+                  type: object
+                  example: {name: Vazdušni pritisak,
+                           unit: hPa }
                 value:
                   description: Vrednost meteorološke promenljive
                   type: number
                   format: float
                   example:  827.7
-                unit:
-                  description: Jedinica merene promenljive
-                  type: string
-                  example: hPa
-                source_id:
-                  description: ID izvora podataka
-                  type: integer
-                  example: 1
+                source:
+                  description: Izvora podataka
+                  type: object
+                  example: {code: PS1,
+                            name: Planinska stanica 1,
+                            location: {"name": "Kopaonik",
+                                        "lat": 43.28504518887785,
+                                        "long": 20.80100960793842,
+                                        "country": "Srbija",
+                                        "type": "Planina",
+                                        "elevation": 1070},
+                            description: Osnovni planinski meteorološki izvor}
                 location:
                   description: Naziv lokacije
-                  type: string
-                  example: Kopaonik
-                measurement_sources_id:
-                  description: ID izvor merenja
-                  type: integer
-                  example: 1
+                  type: object
+                  example: {name: Kopaonik,
+                    lat: 43.28504518887785,
+                    long: 20.80100960793842,
+                    country: Srbija,
+                    type: Planina,
+                    elevation: 1070}
+                measurement_sources:
+                  description:  izvor merenja
+                  type: object
+                  example: {name: automatska meteorološka stanica,
+                            lat: 0.0,
+                            long: 0.0,
+                            type: satelit}
               required:
-                - lat
-                - long
                 - time
                 - variable
                 - value 
-                - unit
-                - source_id
+                - source
                 - location
-                - measurement_sources_id
+                - measurement_sources
               example:
-                    lat: 43.28504518887785
-                    long: 20.801009607938425
                     time: 2024-05-15T14:10:28Z
-                    variable: vazdušni pritisak
+                    variable: {name: Vazdušni pritisak,
+                               unit: hPa }
                     value: 827.7
-                    unit: hPa
-                    source_id: 1
-                    location: Kopaonik
-                    measurement_sources_id: 1
+                    source: {code: PS1,
+                            name: Planinska stanica 1,
+                            location: {"name": "Kopaonik",
+                                        "lat": 43.28504518887785,
+                                        "long": 20.80100960793842,
+                                        "country": "Srbija",
+                                        "type": "Planina",
+                                        "elevation": 1070},
+                            description: Osnovni planinski meteorološki izvor}
+                    location: {name: Kopaonik,
+                                lat: 43.28504518887785,
+                                long: 20.80100960793842,
+                                country: Srbija,
+                                type: Planina,
+                                elevation: 1070}
+                    measurement_sources: {name: automatska meteorološka stanica,
+                                          lat: 0.0,
+                                          long: 0.0,
+                                          type: satelit}
       responses:
         '201':
           description: Uspešno je kreirano merenje
@@ -139,14 +155,6 @@ paths:
             schema:
               type: object
               properties:
-                lat:
-                  description: Geografska širina
-                  type: number
-                  example: 43.28504518887785
-                long:
-                  description: Geografska dužina
-                  type: number
-                  example: 20.80100960793842
                 time:
                   description: Vreme merenja
                   type: string
@@ -154,29 +162,42 @@ paths:
                   example: 2024-05-15T15:02:10Z
                 variable:
                   description: Naziv meteorološke promenljive
-                  type: string
-                  example: vazdušni pritisak
+                  type: object
+                  example: {name: Vazdušni pritisak,
+                            unit: hPa }
                 value:
                   description: Vrednost meteorološke promenljive
                   type: number
                   format: float
                   example: 825.7
-                unit:
-                  description: Jedinica merene promenljive
-                  type: string
-                  example: hPa
-                source_id:
-                  description: ID izvora podataka
-                  type: integer
-                  example: 2
+                source:
+                  description: Izvora podataka
+                  type: object
+                  example: {code: GS1,
+                            name: Gradska stanica 1,
+                            location: {"name": "Beogad",
+                                        "lat": 43.28504518887785,
+                                        "long": 20.80100960793842,
+                                        "country": "Srbija",
+                                        "type": "Grad",
+                                        "elevation": 110},
+                            description: Osnovni gradski meteorološki izvor}
                 location:
                   description: Naziv lokacije
-                  type: string
-                  example: Kopaonik
-                measurement_sources_id:
-                  description: ID izvora merenja
-                  type: integer
-                  example: 1                      
+                  type: object
+                  example: {name: Beograd,
+                    lat: 43.28504518887785,
+                    long: 20.80100960793842,
+                    country: Srbija,
+                    type: Grad,
+                    elevation: 110}
+                measurement_sources:
+                  description:  izvora merenja
+                  type: object
+                  example: {name: automatska meteorološka stanica,
+                                          lat: 0.0,
+                                          long: 0.0,
+                                          type: satelit}                      
       responses:
         '200':
           description: Merenje je uspešno ažurirano.
@@ -406,7 +427,6 @@ paths:
              - Vazdušni pritisak
              - Temperatura
              - Padavine
-             - Padavine
              - UV index
              - Brzina vetra
           required: true
@@ -435,7 +455,6 @@ paths:
                   enum:
                     - Vazdušni pritisak
                     - Temperatura
-                    - Padavine
                     - Padavine
                     - UV index
                     - Brzina vetra
@@ -501,7 +520,6 @@ paths:
                   enum:
                     - Vazdušni pritisak
                     - Temperatura
-                    - Padavine
                     - Padavine
                     - UV index
                     - Brzina vetra
@@ -586,10 +604,15 @@ paths:
                   description: Naziv izvora
                   type: string 
                   example: Planinska stanica 1
-                location_id:
-                  description: ID lokacije na kojoj se nalazi izvor podataka
-                  type: integer
-                  example: 1
+                location:
+                  description: Informacije o lokaciji
+                  type: object
+                  example: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
                 description:
                   description: Opis izvora
                   type: string
@@ -597,12 +620,17 @@ paths:
               required:
                 - code
                 - name
-                - location_id
+                - location
                 - description
               example:
                 code: PS1
                 name: Planinska stanica 1
-                location_id: 1
+                location: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
                 description: Glavna meteorološka planinska stanica 
       responses:
         '201':
@@ -662,10 +690,15 @@ paths:
                   description: Naziv izvora
                   type: string 
                   example: Vazdušna stanica 1
-                location_id:
-                  description: ID lokacije na kojoj se nalazi izvor podataka
-                  type: integer
-                  example: 3
+                location:
+                  description: Informacije o lokaciji 
+                  type: object
+                  example: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
                 description:
                   description: Opis izvora
                   type: string
@@ -673,13 +706,18 @@ paths:
               required:
                 - code
                 - name
-                - location_id
+                - location
                 - description
               example:
                 code: PS1
                 name: Planinska stanica 1
-                location_id: 3
-                description: Vazdušna stancica Niša
+                location: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
+                description: Vazdušna stancica Kopaonika
       responses:
         '200':
           description: Izvor merenja uspešno ažuriran
@@ -749,20 +787,30 @@ paths:
                   description: Kapacitet stanice
                   type: integer
                   example: 100
-                location_id:
-                  description: ID lokacije stanice
-                  type: integer
-                  example: 1
+                location:
+                  description: Informacije o lokaciji
+                  type: object
+                  example: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
               required:
                 - name
                 - type
                 - capacity
-                - location_id
+                - location
               example:
                name: Meteorološka stanica Kopaonik
                type: automatska
                capacity: 100
-               location_id: 1
+               location: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
 
       responses:
         '201':
@@ -822,11 +870,26 @@ paths:
                   description: Kapacitet stanice
                   type: integer
                   example: 10
+                location:
+                  description: Informacije o lokaciji
+                  type: object
+                  example: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
               example:
                 id: 2
                 name: Meteorološka stanica Palić
                 type: ručna
                 capacity: 10
+                location: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
 
       responses:
         '200':
@@ -910,7 +973,7 @@ paths:
                 - long
                 - type
               example:
-                name: automatska meteorološka stanica
+                name: satelit
                 lat: 0.0
                 long: 0.0
                 type: satelit
@@ -1017,14 +1080,6 @@ components:
           x-primary-key: true
           x-autoincrement: true
           example: 1
-        lat:
-          description: Geografska širina
-          type: number
-          example: 43.28504518887785
-        long:
-          description: Geografska dužina
-          type: number
-          example: 20.801009607938425
         time:
           description: Vreme merenja
           type: string
@@ -1032,50 +1087,56 @@ components:
           example: 2024-05-15T14:10:28Z
         variable:
           description: Naziv meteorološke promenljive
-          type: string
-          example: vazdušni pritisak
+          type: object
+          $ref: "#/components/schemas/Variable"
         value:
           description: Vrednost meteorološke promenljive
           type: number
           format: float
           example: 827.7
-        unit:
-          description: Jedinica merene promenljive
-          type: string
-          example: hPa
-        source_id:
-          description: ID izvora podataka
-          type: integer
-          example: 1
+        source:
+          description: Izvora podataka
+          type: object
+          $ref: "#/components/schemas/Source"
         location:
           description: Naziv lokacije
-          type: string
-          example: Kopaonik
-        measurement_sources_id:
-          description: ID izvor merenja
-          type: integer
-          example: 1
+          type: object
+          $ref: "#/components/schemas/Location"
+        measurement_sources:
+          description: Izvor merenja
+          type: object
+          $ref: "#/components/schemas/MeasurementSource"
       required:
-          - lat
-          - long
           - time
           - variable
           - value 
-          - unit
-          - source_id
+          - source
           - location
-          - measurement_sources_id
+          - measurement_sources
       example:
-        id: 1
-        lat: 43.28504518887785
-        long: 20.801009607938425
         time: 2024-05-15T14:10:28Z
-        variable: vazdušni pritisak
-        value: 827
-        unit: hPa
-        source_id: 1
-        location: Kopaonik
-        measurement_sources_id: 1
+        variable: {name: Vazdušni pritisak,
+                   unit: hPa} 
+        value: 827.7
+        source: {code: PS1,
+                            name: Planinska stanica 1,
+                            location: {"name": "Kopaonik",
+                                        "lat": 43.28504518887785,
+                                        "long": 20.80100960793842,
+                                        "country": "Srbija",
+                                        "type": "Planina",
+                                        "elevation": 1070},
+                            description: Osnovni planinski meteorološki izvor}
+        location: {name: Kopaonik,
+                    lat: 43.28504518887785,
+                    long: 20.80100960793842,
+                    country: Srbija,
+                    type: Planina,
+                    elevation: 1070}
+        measurement_sources: {name: automatska meteorološka stanica,
+                              lat: 0.0,
+                              long: 0.0,
+                              type: satelit}
     Location:
       type: object
       description: lokacije
@@ -1156,7 +1217,6 @@ components:
           - Vazdušni pritisak
           - Temperatura
           - Padavine
-          - Padavine
           - UV index
           - Brzina vetra
         unit:
@@ -1191,21 +1251,27 @@ components:
         name:
           description: Naziv izvora podataka
           type: string
-        location_id:
-            description: ID lokacije na kojoj se nalazi izvor podataka
-            type: integer
+        location:
+            description: Informacije o lokaciji
+            type: object
+            $ref: "#/components/schemas/Location"
         description:
             description: Opis izvora
             type: string
       required:
           - code
           - name
-          - location_id
+          - location
           - description
       example:
         code: PS1
         name: Planinska stanica 1
-        location_id: 1
+        location: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
         description: Osnovni planinski meteorološki izvor
     Station:
       type: object
@@ -1233,20 +1299,25 @@ components:
           description: Kpacitet stanice
           type: integer
           example: 100
-        location_id:
-          description: id stanice
-          type: integer
-          example: 1
+        location:
+            description: Informacije o lokaciji
+            type: object
+            $ref: "#/components/schemas/Location"
       required:
         - name
         - type
         - capacity
-        - location_id
+        - location
       example:
           name: Meteorološka stanica Kopaonik
           type: automatska
           capacity: 100
-          location_id: 1
+          location: {"name": "Kopaonik",
+                    "lat": 43.28504518887785,
+                    "long": 20.80100960793842,
+                    "country": "Srbija",
+                    "type": "Planina",
+                    "elevation": 1070}
     MeasurementSource:
       type: object
       description: Naziv izvora merenja
@@ -1282,7 +1353,7 @@ components:
         - long
         - type
       example:
-        name: automatska meteorološka stanica
+        name: satelit
         lat: 0.0
         long: 0.0
         type: satelit

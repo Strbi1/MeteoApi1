@@ -16,8 +16,39 @@ def getMeasurements(location=None):
 
 
 def createMeasurement(body):
-    measurement = models.Measurement.from_dict(lat = body["lat"], long = body["long"], time = body["time"],
-    variable = body["variable"], value = body["value"], unit = body["unit"], source_id = body["source_id"], location = body["location"], measurement_sources_id = body["measurement_sources_id"])
+    location = models.Location.query.filter_by(name=body['location']['name']).first()
+    if location is None:
+        location_dict = body['location']
+        if 'id' in location_dict:
+            del location_dict['id']
+        location = models.Location.from_dict(**location_dict)
+        database.db.session.add(location)
+        database.db.session.commit()
+    measurement_sources = models.MeasurementSource.query.filter_by(name=body['measurement_sources']['type']).first()
+    if measurement_sources is None:
+        measurement_sources_dict = body['measurement_sources']
+        if 'id' in measurement_sources_dict:
+            del measurement_sources_dict['id']
+        measurement_sources = models.MeasurementSource.from_dict(**measurement_sources_dict)
+        database.db.session.add(measurement_sources)
+        database.db.session.commit()
+    source = models.Source.query.filter_by(name=body['source']['code']).first()
+    if source is None:
+        source_dict = body['source']
+        if 'id' in source_dict:
+            del source_dict['id']
+        source = models.Source.from_dict(**source_dict)
+        database.db.session.add(source)
+        database.db.session.commit()
+    variable = models.Variable.query.filter_by(name=body['variable']['name']).first()
+    if variable is None:
+        variable_dict = body['variable']
+        if 'id' in variable_dict:
+            del variable_dict['id']
+        variable = models.Variable.from_dict(**variable_dict)
+        database.db.session.add(variable)
+        database.db.session.commit()
+    measurement = models.Measurement.from_dict(**body)
     database.db.session.add(measurement)
     database.db.session.commit()
     return measurement.to_dict()
@@ -157,19 +188,27 @@ def getSource(code=None):
 
 
 def createSource(body):
-    location = models.Location.query.filter_by(id=body['location_id']).first()
-    if not location:
-        return ("Location not found.", 404)
-    source_data = {
-        "name": body["name"],
-        "code": body["code"],
-        "description": body["description"],
-        "location_id": location.id
-    }
-    sources = models.Source.from_dict(**source_data)
+    location = models.Location.query.filter_by(name=body['location']['name']).first()
+    if location is None:
+        location_dict = body['location']
+        if 'id' in location_dict:
+            del location_dict['id']
+        location = models.Location.from_dict(**location_dict)
+        database.db.session.add(location)
+        database.db.session.commit()
+        # return ("Location not found.", 404)
+    # body['location'] = location
+    # source_data = {
+    #     "name": body["name"],
+    #     "code": body["code"],
+    #     "description": body["description"],
+    #     "location_id": location.id
+    # }
+    sources = models.Source.from_dict(**body)
     database.db.session.add(sources)
     database.db.session.commit()
     return sources.to_dict()
+
 
 
 def getSourceById(id):
@@ -185,6 +224,8 @@ def updateSourceById(body, id):
         return ("Sources not found.", 404)
     sources.code = body["code"]
     sources.name = body["name"]
+    sources.location = body["location"]
+    sources.description = body["description"]
     database.db.session.commit()
     return 200
 
@@ -210,23 +251,18 @@ def getStation(type=None):
 
 
 def createStation(body):
-    # Pronađem ili kreiraj location objekat
-    location = models.Location.query.filter_by(id=body['location_id']).first()
-    if not location:
-        return ("Location not found.", 404)
-
-    # Kreiram Station sa location objektom
-    station_data = {
-        "name": body["name"],
-        "type": body["type"],
-        "capacity": body["capacity"],
-        "location_id": location.id
-    }
-
-    station = models.Station.from_dict(**station_data)
-    database.db.session.add(station)
+    location = models.Location.query.filter_by(name=body['location']['name']).first()
+    if location is None:
+        location_dict = body['location']
+        if 'id' in location_dict:
+            del location_dict['id']
+        location = models.Location.from_dict(**location_dict)
+        database.db.session.add(location)
+        database.db.session.commit()
+    stations = models.Station.from_dict(**body)
+    database.db.session.add(stations)
     database.db.session.commit()
-    return station.to_dict()
+    return stations.to_dict()
 
 def getStationById(id):
     stations = models.Station.query.filter_by(id=id).first()
@@ -242,7 +278,7 @@ def updateStationById(body, id):
     stations.name = body["name"]
     stations.type = body["type"]
     stations.capacity = body["capacity"]
-    stations.location_id = body['location_id']
+    stations.location = body['location']
     database.db.session.commit()
     return 200
 

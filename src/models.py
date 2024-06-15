@@ -15,15 +15,12 @@ Base = models.Base  # type: ignore
 class _MeasurementDictBase(typing.TypedDict, total=True):
     """TypedDict for properties that are required."""
 
-    lat: float
-    long: float
     time: str
-    variable: str
+    variable: "VariableDict"
     value: float
-    unit: str
-    source_id: int
-    location: str
-    measurement_sources_id: int
+    source: "SourceDict"
+    location: "LocationDict"
+    measurement_sources: "MeasurementSourceDict"
 
 
 class MeasurementDict(_MeasurementDictBase, total=False):
@@ -40,15 +37,12 @@ class TMeasurement(typing.Protocol):
 
     Attrs:
         id: Identifikacioni broj
-        lat: Geografska širina
-        long: Geografska dužina
         time: Vreme merenja
         variable: Naziv meteorološke promenljive
         value: Vrednost meteorološke promenljive
-        unit: Jedinica merene promenljive
-        source_id: ID izvora podataka
+        source: Izvora podataka
         location: Naziv lokacije
-        measurement_sources_id: ID izvor merenja
+        measurement_sources: Izvor merenja
 
     """
 
@@ -59,51 +53,42 @@ class TMeasurement(typing.Protocol):
 
     # Model properties
     id: 'sqlalchemy.Column[int]'
-    lat: 'sqlalchemy.Column[float]'
-    long: 'sqlalchemy.Column[float]'
     time: 'sqlalchemy.Column[datetime.datetime]'
-    variable: 'sqlalchemy.Column[str]'
+    variable: 'sqlalchemy.Column["TVariable"]'
     value: 'sqlalchemy.Column[float]'
-    unit: 'sqlalchemy.Column[str]'
-    source_id: 'sqlalchemy.Column[int]'
-    location: 'sqlalchemy.Column[str]'
-    measurement_sources_id: 'sqlalchemy.Column[int]'
+    source: 'sqlalchemy.Column["TSource"]'
+    location: 'sqlalchemy.Column["TLocation"]'
+    measurement_sources: 'sqlalchemy.Column["TMeasurementSource"]'
 
-    def __init__(self, lat: float, long: float, time: datetime.datetime, variable: str, value: float, unit: str, source_id: int, location: str, measurement_sources_id: int, id: typing.Optional[int] = None) -> None:
+    def __init__(self, time: datetime.datetime, variable: "TVariable", value: float, source: "TSource", location: "TLocation", measurement_sources: "TMeasurementSource", id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
         Args:
             id: Identifikacioni broj
-            lat: Geografska širina
-            long: Geografska dužina
             time: Vreme merenja
             variable: Naziv meteorološke promenljive
             value: Vrednost meteorološke promenljive
-            unit: Jedinica merene promenljive
-            source_id: ID izvora podataka
+            source: Izvora podataka
             location: Naziv lokacije
-            measurement_sources_id: ID izvor merenja
+            measurement_sources: Izvor merenja
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, lat: float, long: float, time: datetime.datetime, variable: str, value: float, unit: str, source_id: int, location: str, measurement_sources_id: int, id: typing.Optional[int] = None) -> "TMeasurement":
+    def from_dict(cls, time: datetime.datetime, variable: "VariableDict", value: float, source: "SourceDict", location: "LocationDict", measurement_sources: "MeasurementSourceDict", id: typing.Optional[int] = None) -> "TMeasurement":
         """
         Construct from a dictionary (eg. a POST payload).
 
         Args:
             id: Identifikacioni broj
-            lat: Geografska širina
-            long: Geografska dužina
             time: Vreme merenja
             variable: Naziv meteorološke promenljive
             value: Vrednost meteorološke promenljive
-            unit: Jedinica merene promenljive
-            source_id: ID izvora podataka
+            source: Izvora podataka
             location: Naziv lokacije
-            measurement_sources_id: ID izvor merenja
+            measurement_sources: Izvor merenja
 
         Returns:
             Model instance based on the dictionary.
@@ -369,7 +354,7 @@ class _SourceDictBase(typing.TypedDict, total=True):
 
     code: str
     name: str
-    location_id: int
+    location: "LocationDict"
     description: str
 
 
@@ -389,7 +374,7 @@ class TSource(typing.Protocol):
         id: Identifikacioni broj (kluč)
         code: Kod (skraćeni naziv)
         name: Naziv izvora podataka
-        location_id: ID lokacije na kojoj se nalazi izvor podataka
+        location: Informacije o lokaciji
         description: Opis izvora
 
     """
@@ -403,10 +388,10 @@ class TSource(typing.Protocol):
     id: 'sqlalchemy.Column[int]'
     code: 'sqlalchemy.Column[str]'
     name: 'sqlalchemy.Column[str]'
-    location_id: 'sqlalchemy.Column[int]'
+    location: 'sqlalchemy.Column["TLocation"]'
     description: 'sqlalchemy.Column[str]'
 
-    def __init__(self, code: str, name: str, location_id: int, description: str, id: typing.Optional[int] = None) -> None:
+    def __init__(self, code: str, name: str, location: "TLocation", description: str, id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -414,14 +399,14 @@ class TSource(typing.Protocol):
             id: Identifikacioni broj (kluč)
             code: Kod (skraćeni naziv)
             name: Naziv izvora podataka
-            location_id: ID lokacije na kojoj se nalazi izvor podataka
+            location: Informacije o lokaciji
             description: Opis izvora
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, code: str, name: str, location_id: int, description: str, id: typing.Optional[int] = None) -> "TSource":
+    def from_dict(cls, code: str, name: str, location: "LocationDict", description: str, id: typing.Optional[int] = None) -> "TSource":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -429,7 +414,7 @@ class TSource(typing.Protocol):
             id: Identifikacioni broj (kluč)
             code: Kod (skraćeni naziv)
             name: Naziv izvora podataka
-            location_id: ID lokacije na kojoj se nalazi izvor podataka
+            location: Informacije o lokaciji
             description: Opis izvora
 
         Returns:
@@ -479,7 +464,7 @@ class _StationDictBase(typing.TypedDict, total=True):
     name: str
     type: str
     capacity: int
-    location_id: int
+    location: "LocationDict"
 
 
 class StationDict(_StationDictBase, total=False):
@@ -499,7 +484,7 @@ class TStation(typing.Protocol):
         name: Naziv meteoroloških stanica
         type: Tip stanice
         capacity: Kpacitet stanice
-        location_id: id stanice
+        location: Informacije o lokaciji
 
     """
 
@@ -513,9 +498,9 @@ class TStation(typing.Protocol):
     name: 'sqlalchemy.Column[str]'
     type: 'sqlalchemy.Column[str]'
     capacity: 'sqlalchemy.Column[int]'
-    location_id: 'sqlalchemy.Column[int]'
+    location: 'sqlalchemy.Column["TLocation"]'
 
-    def __init__(self, name: str, type: str, capacity: int, location_id: int, id: typing.Optional[int] = None) -> None:
+    def __init__(self, name: str, type: str, capacity: int, location: "TLocation", id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -524,13 +509,13 @@ class TStation(typing.Protocol):
             name: Naziv meteoroloških stanica
             type: Tip stanice
             capacity: Kpacitet stanice
-            location_id: id stanice
+            location: Informacije o lokaciji
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, name: str, type: str, capacity: int, location_id: int, id: typing.Optional[int] = None) -> "TStation":
+    def from_dict(cls, name: str, type: str, capacity: int, location: "LocationDict", id: typing.Optional[int] = None) -> "TStation":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -539,7 +524,7 @@ class TStation(typing.Protocol):
             name: Naziv meteoroloških stanica
             type: Tip stanice
             capacity: Kpacitet stanice
-            location_id: id stanice
+            location: Informacije o lokaciji
 
         Returns:
             Model instance based on the dictionary.
