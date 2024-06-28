@@ -4,15 +4,18 @@ import database
 import models
 
 
+from sqlalchemy import func
+
 def getMeasurements(location=None):
     query = models.Measurement.query
     if location:
-        query = query.filter(models.Measurement.location.ilike(f'%{location}%'))
+        query = query.join(models.Location).filter(func.lower(models.Location.name).like(f'%{location.lower()}%'))
     else:
-        print("No name provided, returning all measurements")
+        print("No location provided, returning all measurements")
     measurements = query.all()
     measurements = map(lambda m: m.to_dict(), measurements)
-    return list(measurements)  
+    return list(measurements)
+ 
 
 
 def createMeasurement(body):

@@ -8,7 +8,7 @@ import database
 app = connexion.FlaskApp(__name__, specification_dir=".")
 
 # Initializing database
-app.app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://meteoapi:meteoapi123@db/meteoapi"
+app.app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://meteoapi:meteoapi123@db/meteoapi" #protokol, autentifikacija na PostgreSqlserveru, lozinka, db - host gde se nalazi baza, pod imenom meteoapi
 database.db.init_app(app.app)
 with app.app.app_context():
     database.db.create_all()

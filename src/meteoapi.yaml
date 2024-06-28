@@ -513,7 +513,6 @@ paths:
             schema:
               type: object
               properties:
-                
                 name:
                   description: Naziv promenljive
                   type: string
